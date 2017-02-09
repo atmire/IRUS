@@ -281,6 +281,8 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
             rd.close();
             if (((HttpURLConnection) conn).getResponseCode() != 200) {
                 ExportUsageEventListener.logfailed(c, urlStr);
+            } else if (log.isDebugEnabled()) {
+                log.debug("Successfully posted " + urlStr + " on " + new Date());
             }
         } catch (Exception e) {
             log.error("Failed to send url to tracker URL: " + urlStr);
@@ -299,8 +301,6 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
             rd.close();
             if (((HttpURLConnection) conn).getResponseCode() == 200) {
                 success = true;
-            } else if (log.isDebugEnabled()) {
-                log.debug("Successfully posted " + tracker.getUrl() + " on " + new Date());
             }
         } catch (Exception e) {
             success = false;
