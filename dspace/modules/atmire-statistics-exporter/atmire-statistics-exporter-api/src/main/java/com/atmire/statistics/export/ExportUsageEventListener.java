@@ -192,6 +192,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         }
         String clientUA = StringUtils.defaultIfBlank(request.getHeader("USER-AGENT"), "");
         String referer = StringUtils.defaultIfBlank(request.getHeader("referer"), "");
+        String sessionID =  StringUtils.defaultIfBlank(request.getSession().getId(), "");
         String mimeType = bitstream.getFormat().getMIMEType();
 
         //Start adding our data
@@ -204,7 +205,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
 //        data += "&" + URLEncoder.encode("svc.format", "UTF-8") + "=" + URLEncoder.encode(mimeType, "UTF-8");
         data += "&" + URLEncoder.encode("rfr_id", "UTF-8") + "=" + URLEncoder.encode(ConfigurationManager.getProperty("dspace.hostname"), "UTF-8");
         data += "&" + URLEncoder.encode("url_tim", "UTF-8") + "=" + URLEncoder.encode(new DCDate(new Date()).toString(), "UTF-8");
-
+        data += "&" + URLEncoder.encode("svc.session", "UTF-8") + "=" + URLEncoder.encode(sessionID, "UTF-8");
         //only for jsp ui
         // http://demo.dspace.org/jspui/handle/10673/2235
         // http://demo.dspace.org/jspui/bitstream/10673/2235/1/Captura.JPG
