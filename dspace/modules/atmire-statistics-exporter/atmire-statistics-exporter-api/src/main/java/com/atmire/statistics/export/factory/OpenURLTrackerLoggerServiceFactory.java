@@ -11,7 +11,7 @@ public abstract class OpenURLTrackerLoggerServiceFactory {
     public abstract OpenURLTrackerLoggerService getOpenUrlTrackerLoggerService();
 
     public static OpenURLTrackerLoggerServiceFactory getInstance(){
-        return DSpaceServicesFactory.getInstance().getServiceManager().getServiceByName("OpenURLTrackerLoggerServiceFactory", OpenURLTrackerLoggerServiceFactory.class);
+        return DSpaceServicesFactory.getInstance().getServiceManager().getServiceByName("openURLTrackerLoggerServiceFactory", OpenURLTrackerLoggerServiceFactory.class);
 
     }
 
