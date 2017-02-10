@@ -195,8 +195,8 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         }
         String clientUA = StringUtils.defaultIfBlank(request.getHeader("USER-AGENT"), "");
         String referer = StringUtils.defaultIfBlank(request.getHeader("referer"), "");
+        String sessionID =  StringUtils.defaultIfBlank(request.getSession().getId(), "");
         String mimeType = bitstream.getFormat(context).getMIMEType();
-
         //Start adding our data
         String data = "";
         data += URLEncoder.encode("url_ver", "UTF-8") + "=" + URLEncoder.encode(trackerUrlVersion, "UTF-8");
@@ -207,6 +207,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
 //        data += "&" + URLEncoder.encode("svc.format", "UTF-8") + "=" + URLEncoder.encode(mimeType, "UTF-8");
         data += "&" + URLEncoder.encode("rfr_id", "UTF-8") + "=" + URLEncoder.encode(ConfigurationManager.getProperty("dspace.hostname"), "UTF-8");
         data += "&" + URLEncoder.encode("url_tim", "UTF-8") + "=" + URLEncoder.encode(new DCDate(new Date()).toString(), "UTF-8");
+        data += "&" + URLEncoder.encode("svc.session", "UTF-8") + "=" + URLEncoder.encode(sessionID, "UTF-8");
 
         //only for jsp ui
         // http://demo.dspace.org/jspui/handle/10673/2235
@@ -327,7 +328,17 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
 
     public static void reprocessFailedQueue(Context context) throws SQLException {
         Context c = new Context();
-        List<OpenURLTracker> openURLTrackers = OpenURLTrackerLoggerServiceFactory.getInstance().getOpenUrlTrackerLoggerService().findAll(c);
+        OpenURLTrackerLoggerServiceFactory instance = OpenURLTrackerLoggerServiceFactory.getInstance();
+        if(instance==null){
+           log.error("Error retrieving the \"OpenURLTrackerLoggerServiceFactory\" instance, aborting the processing");
+            return;
+        }
+        OpenURLTrackerLoggerService openUrlTrackerLoggerService = instance.getOpenUrlTrackerLoggerService();
+        if(openUrlTrackerLoggerService==null){
+            log.error("Error retrieving the \"openUrlTrackerLoggerService\" instance, aborting the processing");
+            return;
+        }
+        List<OpenURLTracker> openURLTrackers = openUrlTrackerLoggerService.findAll(c);
         for(OpenURLTracker openURLTracker : openURLTrackers){
             ExportUsageEventListener.tryReprocessFailed(context, openURLTracker) ;
         }
