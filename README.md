@@ -111,7 +111,7 @@ After the repository has been rebuild and redeployed, Tomcat will need to be res
 The server should be able to access the tracker’s base URL. This can be verified easily using the command:
 
 ```
-wget http://www.jusp.mimas.ac.uk/counter/
+wget http://jusp.jisc.ac.uk/counter/
 ```
 
 If this results in an exception, please verify whether the firewall is configured to authorize outgoing connections.
