@@ -37,9 +37,9 @@ To be able to install the patch, you will need the following prerequisites:
 
 Atmire's modifications to a standard DSpace for IRUS are tracked on Github. The newest patch can therefore be generated from git.
 
-DSPACE 4.x [https://github.com/atmire/IRUS/compare/dspace_4x…stable_4x.diff](https://github.com/atmire/IRUS/compare/dspace_4x…stable_4x.diff)
-DSPACE 5.x [https://github.com/atmire/IRUS/compare/dspace_5x…stable_5x.diff](https://github.com/atmire/IRUS/compare/dspace_5x…stable_5x.diff)
-DSPACE 6.x [https://github.com/atmire/IRUS/compare/dspace_6x…stable_6x.diff](https://github.com/atmire/IRUS/compare/dspace_6x…stable_6x.diff)
+- DSPACE 4.x [https://github.com/atmire/IRUS/compare/dspace_4x…stable_4x.diff](https://github.com/atmire/IRUS/compare/dspace_4x…stable_4x.diff)
+- DSPACE 5.x [https://github.com/atmire/IRUS/compare/dspace_5x…stable_5x.diff](https://github.com/atmire/IRUS/compare/dspace_5x…stable_5x.diff)
+- DSPACE 6.x [https://github.com/atmire/IRUS/compare/dspace_6x…stable_6x.diff](https://github.com/atmire/IRUS/compare/dspace_6x…stable_6x.diff)
 
 Save this file under a meaningful name. It will be later referred to as \<patch file\>
 
