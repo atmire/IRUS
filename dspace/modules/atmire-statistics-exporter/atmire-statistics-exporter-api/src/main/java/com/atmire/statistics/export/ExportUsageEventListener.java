@@ -282,13 +282,12 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
             rd.close();
             if (((HttpURLConnection) conn).getResponseCode() != 200) {
                 ExportUsageEventListener.logfailed(c, urlStr);
+            } else if (log.isDebugEnabled()) {
+                log.debug("Successfully posted " + urlStr + " on " + new Date());
             }
         } catch (Exception e) {
             log.error("Failed to send url to tracker URL: " + urlStr);
             ExportUsageEventListener.logfailed(c, urlStr);
-        } finally {
-//            // @TODO: REMOVE THIS FOR PRODUCTION - ADDING VALID URL's ONLY TO TEST CMD LINE SCRIPT
-//            ExportUsageEventListener.logfailed(c, urlStr);
         }
     }
 
