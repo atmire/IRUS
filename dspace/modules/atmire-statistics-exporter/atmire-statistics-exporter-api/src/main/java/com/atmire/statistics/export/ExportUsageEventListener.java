@@ -97,7 +97,13 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
                 } else
                     trackerValues = null;
 
-                baseUrl = ConfigurationManager.getProperty("stats", "tracker.baseurl");
+                if(StringUtils.equals(ConfigurationManager.getProperty("stats","tracker.environment"), "production")){
+                    baseUrl = ConfigurationManager.getProperty("stats", "tracker.produrl");
+                }
+                else {
+                    baseUrl = ConfigurationManager.getProperty("stats", "tracker.testurl");
+                }
+
                 trackerUrlVersion = ConfigurationManager.getProperty("stats", "tracker.urlversion");
 
 
