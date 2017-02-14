@@ -137,8 +137,14 @@ tracker.type-value = Article, Postprint
 tracker.doi-field=dc.identifier.doi
 # The metadata field containing the version of the record. This field is optional
 tracker.version-field=dc.type.version
+# Set the tracker environment to "test" or "production". Defaults to "test" if empty.
+# The URL used by the test environment can be configured in property tracker.testurl
+# The URL used by the production environment can be configured in property tracker.produrl
+tracker.environment = test
+# The url used to test the submission of tracking info to.
+tracker.testurl = https://jusp.jisc.ac.uk/testcounter/
 # The base url for submitting the tracking info to.
-tracker.baseurl = http://jusp.jisc.ac.uk/counter/
+tracker.produrl = https://jusp.jisc.ac.uk/counter/
 # Identifies data as OpenURL 1.0
 tracker.urlversion = Z39.88-2004
 
@@ -158,7 +164,9 @@ spider.agentregex.regexfile = ${dspace.dir}/config/COUNTER_Robots_list_Jul2016.t
 | --------|--------| -------|
 |tracker.type-field| Only a certain set of file downloads can be sent depending on the value of a certain metadata field, the metadata field to check is configured in this property.|All stats are sent 
 |tracker.type-value| The values in the above metadata field that will be processed.|All stats are sent 
-|tracker.baseurl | The url to which the stats are exported.| N/A
+|tracker.environment | The tracker environment determines to which url the starts are exported.| N/A
+|tracker.testurl | The url to which the stats are exported when testing.| N/A
+|tracker.produrl | The url to which the stats are exported in production.| N/A
 |tracker.urlversion| Tracker version| N/A
 |dspace.type| The url to download a file differs between xmlui & jspui, so the exporter needs to know which link to create.| xmlui
 |spider.ipmatch.enabled| If the IP address matches a spider IP addresses from a txt list that comes with your dspace installation (this is the default implementation - lists in /config/spiders/)| true
