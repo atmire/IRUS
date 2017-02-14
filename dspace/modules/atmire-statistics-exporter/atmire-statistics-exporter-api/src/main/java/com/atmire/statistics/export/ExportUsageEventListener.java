@@ -29,31 +29,21 @@
  */
 package com.atmire.statistics.export;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.dspace.app.util.Util;
-import org.dspace.content.*;
-import org.dspace.core.ConfigurationManager;
-import org.dspace.core.Context;
-import org.dspace.core.LogManager;
-import org.dspace.services.model.Event;
-import org.dspace.statistics.util.SpiderDetector;
-import org.dspace.usage.AbstractUsageEventListener;
-import org.dspace.usage.UsageEvent;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.io.*;
+import java.net.*;
+import java.sql.*;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
+import javax.servlet.http.*;
+import org.apache.commons.lang.*;
+import org.apache.log4j.*;
+import org.dspace.app.util.*;
+import org.dspace.content.*;
+import org.dspace.core.*;
+import org.dspace.core.LogManager;
+import org.dspace.services.model.*;
+import org.dspace.statistics.util.*;
+import org.dspace.usage.*;
 
 /**
  * User: kevin (kevin at atmire.com)
@@ -97,7 +87,13 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
                 } else
                     trackerValues = null;
 
-                baseUrl = ConfigurationManager.getProperty("stats", "tracker.baseurl");
+                if(StringUtils.equals(ConfigurationManager.getProperty("stats","tracker.environment"), "production")){
+                    baseUrl = ConfigurationManager.getProperty("stats", "tracker.produrl");
+                }
+                else {
+                    baseUrl = ConfigurationManager.getProperty("stats", "tracker.testurl");
+                }
+
                 trackerUrlVersion = ConfigurationManager.getProperty("stats", "tracker.urlversion");
 
 
