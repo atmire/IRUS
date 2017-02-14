@@ -10,7 +10,7 @@ import java.util.Date;
  * Created by jonas - jonas@atmire.com on 09/02/17.
  */
 @Entity
-@Table(name="openurltracker")
+@Table(name="OpenUrlTracker")
 public class OpenURLTracker implements ReloadableEntity<Integer> {
 
     @Id
