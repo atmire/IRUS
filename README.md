@@ -122,23 +122,21 @@ A new `stats.cfg` file has been created in the modules configuration directory t
 
 > By default your repository will sent data to a TEST tracker. Please change `tracker.environment` to `production` to start sending data to the live IRUS tracker.
 
+###### DSpace 4 and DSpace 5 configuration ######
+
 ```
 #-----------------------#
 # Atmire stats exporter #
 #-----------------------#
 
 # OPTIONAL metadata field used for filtering.
-# If the returned items require specific values for the "dc.type" field, "dc.type" should be placed here.
+# If items with specific values for the "dc.type" field should be excluded, "dc.type" should be placed here.
 # This should comply to the syntax schema.element.qualified or schema.element if the qualifier is null.
-tracker.type-field = dc.type
+# tracker.type-field = dc.type
 # If "tracker.type-field" is set, the list of values must be defined in "tracker.type-value".
-# This lists a comma separated list of values which can be used for the given field.
-tracker.type-value = Article, Postprint
+# This lists a comma separated list of values that will be excluded for the given field.
+# tracker.type-value = Article, Postprint
 
-# The metadata field containing the doi identifier of the record. This field is optional
-tracker.doi-field=dc.identifier.doi
-# The metadata field containing the version of the record. This field is optional
-tracker.version-field=dc.type.version
 # Set the tracker environment to "test" or "production". Defaults to "test" if empty.
 # The URL used by the test environment can be configured in property tracker.testurl
 # The URL used by the production environment can be configured in property tracker.produrl
@@ -166,7 +164,7 @@ spider.agentregex.regexfile = ${dspace.dir}/config/COUNTER_Robots_list_Jul2016.t
 | --------|--------| -------|
 |tracker.type-field| Only a certain set of file downloads can be sent depending on the value of a certain metadata field, the metadata field to check is configured in this property.|All stats are sent 
 |tracker.type-value| The values in the above metadata field that will be processed.|All stats are sent 
-|tracker.environment | The tracker environment determines to which url the starts are exported.| N/A
+|tracker.environment | The tracker environment determines to which url the statistics are exported.| test
 |tracker.testurl | The url to which the stats are exported when testing.| N/A
 |tracker.produrl | The url to which the stats are exported in production.| N/A
 |tracker.urlversion| Tracker version| N/A
@@ -175,6 +173,59 @@ spider.agentregex.regexfile = ${dspace.dir}/config/COUNTER_Robots_list_Jul2016.t
 |spiders.agentempty.enabled | Checks the user agent (a header string that comes with every request). If this agent is empty, it is most likely not a user browser. This verification is disabled by default.|false 
 |spiders.agentregex.enabled| Matches the user agent vs a defined set of regular expressions (provided by an online service), which are downloaded during installation of your dspace repository, or during an update.| true
 |spiders.agentregex.regexfile| Defines where the file should be downloaded to/where the system should search for the regexes| N/A
+
+
+###### DSpace 6 configuration ######
+
+```
+#-----------------------#
+# Atmire stats exporter #
+#-----------------------#
+
+# OPTIONAL metadata field used for filtering.
+# If items with specific values for the "dc.type" field should be excluded, "dc.type" should be placed here.
+# This should comply to the syntax schema.element.qualified or schema.element if the qualifier is null.
+# stats.tracker.type-field = dc.type
+# If "tracker.type-field" is set, the list of values must be defined in "tracker.type-value".
+# This lists a comma separated list of values that will be excluded for the given field.
+# stats.tracker.type-value = Article, Postprint
+
+# Set the tracker environment to "test" or "production". Defaults to "test" if empty.
+# The URL used by the test environment can be configured in property tracker.testurl
+# The URL used by the production environment can be configured in property tracker.produrl
+stats.tracker.environment = test
+# The url used to test the submission of tracking info to.
+stats.tracker.testurl = https://jusp.jisc.ac.uk/testcounter/
+# The base url for submitting the tracking info to.
+stats.tracker.produrl = https://jusp.jisc.ac.uk/counter/
+# Identifies data as OpenURL 1.0
+stats.tracker.urlversion = Z39.88-2004
+
+# The deployed user interface should be provided to build correct links to files.
+# The dspace.type field can be set to either "xmlui" or "jspui".
+stats.dspace.type = xmlui
+
+# Spider options
+stats.spider.ipmatch.enabled = true
+stats.spider.agentempty.enabled = false
+stats.spider.agentregex.enabled = true
+#  Default is downloaded during build: ${dspace.dir}/config/COUNTER_Robots_list_Jul2016.txt
+spider.agentregex.regexfile = ${dspace.dir}/config/COUNTER_Robots_list_Jul2016.txt
+```
+
+|Property |Usage |Default 
+| --------|--------| -------|
+|stats.tracker.type-field| Only a certain set of file downloads can be sent depending on the value of a certain metadata field, the metadata field to check is configured in this property.|All stats are sent 
+|stats.tracker.type-value| The values in the above metadata field that will be processed.|All stats are sent 
+|stats.tracker.environment | The tracker environment determines to which url the statistics are exported.| test
+|stats.tracker.testurl | The url to which the stats are exported when testing.| N/A
+|stats.tracker.produrl | The url to which the stats are exported in production.| N/A
+|stats.tracker.urlversion| Tracker version| N/A
+|stats.dspace.type| The url to download a file differs between xmlui & jspui, so the exporter needs to know which link to create.| xmlui
+|stats.spider.ipmatch.enabled| If the IP address matches a spider IP addresses from a txt list that comes with your dspace installation (this is the default implementation - lists in /config/spiders/)| true
+|stats.spiders.agentempty.enabled | Checks the user agent (a header string that comes with every request). If this agent is empty, it is most likely not a user browser. This verification is disabled by default.|false 
+|stats.spiders.agentregex.enabled| Matches the user agent vs a defined set of regular expressions (provided by an online service), which are downloaded during installation of your dspace repository, or during an update.| true
+|stats.spiders.agentregex.regexfile| Defines where the file should be downloaded to/where the system should search for the regexes| N/A
 
 
 # Functionality of the patch <a name="Patch-functionality"></a> #
