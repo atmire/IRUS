@@ -123,22 +123,28 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
 
                             if (0 < bundle.getItems().length) {
                                 Item item = bundle.getItems()[0];
-
-                                //Check if we have a valid type of item !
-                                init();
-                                if (trackerType != null) {
-                                    DCValue[] types = item.getMetadata(trackerType.schema, trackerType.element, trackerType.qualifier, Item.ANY);
-                                    //Find out if we have a type that matches one of our values
-                                    for (DCValue type : types) {
-                                        if (trackerValues != null && trackerValues.contains(type.value.toLowerCase())) {
-                                            //We have found a type so process this bitstream
-                                            processItem(ue.getContext(), item, bit, ue.getRequest());
-                                            break;
+                                if(item.isArchived() && !item.canEdit()) {
+                                    //Check if we have a valid type of item !
+                                    init();
+                                    if (trackerType != null && trackerValues != null) {
+                                        DCValue[] types = item.getMetadata(trackerType.schema, trackerType.element, trackerType.qualifier, Item.ANY);
+                                        if(types.length>0){
+                                            //Find out if we have a type that matches one of our values
+                                            for (DCValue type : types) {
+                                                if (!trackerValues.contains(type.value.toLowerCase())) {
+                                                    //We have found a type so process this bitstream
+                                                    processItem(ue.getContext(), item, bit, ue.getRequest());
+                                                    break;
+                                                }
+                                            }
                                         }
+                                        else {
+                                            processItem(ue.getContext(), item, bit, ue.getRequest());
+                                        }
+                                    } else {
+                                        //no tracker.type-field => process all items
+                                        processItem(ue.getContext(), item, bit, ue.getRequest());
                                     }
-                                } else {
-                                    //no tracker.type-field => process all items
-                                    processItem(ue.getContext(), item, bit, ue.getRequest());
                                 }
                             }
                         } else {
