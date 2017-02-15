@@ -104,7 +104,7 @@ DSpace repositories are typically built using Maven and deployed using Ant.
 
 ### 5. Restart your Tomcat <a name="Restart-tomcat"></a> ###
 
-After the repository has been rebuild and redeployed, Tomcat will need to be restarted to bring the changes to production.
+After the repository has been rebuilt and redeployed, Tomcat will need to be restarted to bring the changes to production.
 
 ### 6. Verify the firewall <a name="Firewall-verification"></a> ###
 
@@ -118,7 +118,9 @@ If this results in an exception, please verify whether the firewall is configure
 
 # Configuration <a name="Configuration"></a> #
 
-A new stats.cfg has been created in the modules configuration directory to offer compatibility with your repository. Below is an excerpt from the configuration and a short explanation of every property that is used.
+A new `stats.cfg` file has been created in the modules configuration directory to offer compatibility with your repository. Below is an excerpt from the configuration and a short explanation of every property that is used.
+
+> By default the tracker will sent data to a TEST tracker. Please change `tracker.environment` to `production` to start sending data to the live IRUS tracker.
 
 ```
 #-----------------------#
