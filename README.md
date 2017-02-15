@@ -4,13 +4,14 @@
 
 - [Adding the functionality to your DSpace codebase ](#Patch-installation-procedures)
     - [Prerequisites](#Prerequisites)
-    - [Patch installation ](#Patch-installation)
-        - [1. Go to the DSpace Source directory. ](#goto-DSpace-Source)
-        - [2. Run the Git command to check whether the patch can be correctly applied. ](#Run-git-command)
+    - [Obtaining a recent patch file](#Obtaining-recent-patch)
+    - [Patch installation](#Patch-installation)
+        - [1. Go to the DSpace Source directory](#goto-DSpace-Source)
+        - [2. Run the Git command to check whether the patch can be correctly applied](#Run-git-command)
         - [3. Apply the patch ](#Apply-patch)
-        - [4. Rebuild and redeploy your repository ](#Rebuild-redeploy)
-        - [5. Restart your Tomcat ](#Restart-tomcat)
-        - [6. Verify the firewall ](#Firewall-verification)
+        - [4. Rebuild and redeploy your repository](#Rebuild-redeploy)
+        - [5. Restart Tomcat](#Restart-tomcat)
+        - [6. Verify the firewall](#Firewall-verification)
 - [Configuration](#Configuration)
 - [Functionality of the patch](#Patch-functionality)
     - [Retrying failed commits](#Failed-commits-retry)
@@ -18,7 +19,7 @@
 
 # Adding the functionality to your DSpace codebase <a name="Patch-installation-procedures"></a> #
 
-## Prerequisites  <a name="Prerequisites"></a> ##
+## Prerequisites <a name="Prerequisites"></a> ##
 
 The IRUS changes have been released as a "patch" for DSpace as this allows for the easiest installation process of the incremental codebase. The code needed to install and deploy the IRUS changes can be found in the [Obtaining a recent patch file](#Obtaining-recent-patch) section, which needs to be applied to your DSpace source code.
 
@@ -33,7 +34,7 @@ To be able to install the patch, you will need the following prerequisites:
 * A running DSpace 4.x, 5.x or 6.x instance.
 * Git should be installed on the machine. The patch will be applied using several git commands as indicated in the next section.
 
-## Obtaining a recent patch file<a name="Obtaining-recent-patch"></a> ##
+## Obtaining a recent patch file <a name="Obtaining-recent-patch"></a> ##
 
 Atmire's modifications to a standard DSpace for IRUS are tracked on Github. The newest patch can therefore be generated from git.
 
@@ -43,11 +44,11 @@ Atmire's modifications to a standard DSpace for IRUS are tracked on Github. The 
 
 Save this file under a meaningful name. It will be later referred to as \<patch file\>
 
-## Patch installation<a name="Patch-installation"></a> ##
+## Patch installation <a name="Patch-installation"></a> ##
 
 To install the patch, the following steps will need to be performed.
 
-### 1. Go to the DSpace Source directory.<a name="goto-DSpace-Source"></a> ###
+### 1. Go to the DSpace Source directory <a name="goto-DSpace-Source"></a> ###
 
 This folder should have a structure similar to:
 dspace
@@ -56,7 +57,7 @@ dspace
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    ...
 pom.xml
 
-### 2. Run the Git command to check whether the patch can be correctly applied.<a name="Run-git-command"></a> ###
+### 2. Run the Git command to check whether the patch can be correctly applied <a name="Run-git-command"></a> ###
 
 Run the following command where \<patch file\> needs to be replaced with the name of the patch:
 
@@ -68,7 +69,7 @@ This command will return whether it is possible to apply the patch to your insta
 In case the check is successful, the patch can be installed as explained in the next steps.
 
 
-### 3. Apply the patch<a name="Apply-patch"></a> ###
+### 3. Apply the patch <a name="Apply-patch"></a> ###
 
 To apply the patch, the following command should be run where \<patch file\> is replaced with the name of the patch file.
 
@@ -102,7 +103,7 @@ This might also help during conflicts.
 After the patch has been applied, the repository will need to be rebuild.
 DSpace repositories are typically built using Maven and deployed using Ant.
 
-### 5. Restart your Tomcat <a name="Restart-tomcat"></a> ###
+### 5. Restart Tomcat <a name="Restart-tomcat"></a> ###
 
 After the repository has been rebuilt and redeployed, Tomcat will need to be restarted to bring the changes to production.
 
