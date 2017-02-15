@@ -120,7 +120,7 @@ If this results in an exception, please verify whether the firewall is configure
 
 A new `stats.cfg` file has been created in the modules configuration directory to offer compatibility with your repository. Below is an excerpt from the configuration and a short explanation of every property that is used.
 
-> By default the tracker will sent data to a TEST tracker. Please change `tracker.environment` to `production` to start sending data to the live IRUS tracker.
+> By default your repository will sent data to a TEST tracker. Please change `tracker.environment` to `production` to start sending data to the live IRUS tracker.
 
 ```
 #-----------------------#
