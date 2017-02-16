@@ -1,31 +1,50 @@
-# IRUS
+# DSpace IRUS-UK patch
 
-**Table of Contents**
+- [IRUS-UK information](#IRUS)
+- [Prerequisites](#Prerequisites)
+    - [Codebase](#Codebase)
+    - [Firewall verification](#Firewall-verification)
+    - [Download patch](#Download-patch)
+- [Installation](#Installation)
+    - [1. Go to the DSpace Source directory](#Installation-src-dir)
+    - [2. Check patch compatibility](#Check-patch)
+    - [3. Apply the patch](#Apply-patch)
+    - [4. Tracker configuration](#Tracker-configuration)
+    - [5. Rebuild and redeploy your repository](#Rebuild-redeploy)
+    - [6. Restart Tomcat](#Restart-tomcat)
+- [Configuration overview](#Configuration-overview)
+- [Additional functionality](#Additional-functionality)
+    - [Retry failed trackings](#Failed-trackings)
 
-- [Adding the functionality to your DSpace codebase ](#Patch-installation-procedures)
-    - [Prerequisites](#Prerequisites)
-    - [Obtaining a recent patch file](#Obtaining-recent-patch)
-    - [Patch installation](#Patch-installation)
-        - [1. Go to the DSpace Source directory](#goto-DSpace-Source)
-        - [2. Run the Git command to check whether the patch can be correctly applied](#Run-git-command)
-        - [3. Apply the patch ](#Apply-patch)
-        - [4. Rebuild and redeploy your repository](#Rebuild-redeploy)
-        - [5. Restart Tomcat](#Restart-tomcat)
-        - [6. Verify the firewall](#Firewall-verification)
-- [Configuration](#Configuration)
-- [Functionality of the patch](#Patch-functionality)
-    - [Retrying failed commits](#Failed-commits-retry)
 
+## <a name="IRUS"></a> IRUS-UK
 
-# Adding the functionality to your DSpace codebase <a name="Patch-installation-procedures"></a> #
+IRUS (Institutional Repository Usage Statistics) enables UK Institutional Repositories (IRs) to share and expose statistics based on the COUNTER standard. It will provide a nation-wide view of UK repository usage to benefit organisations such as [Jisc](https://www.jisc.ac.uk/), it will offer opportunities for benchmarking and act as an intermediary between UK repositories and other agencies.
 
-## Prerequisites <a name="Prerequisites"></a> ##
+IRUS-UK collects raw usage data from UK IRs and processes these data into COUNTER-compliant statistics. This provides repositories with comparable, authoritative, standards-based data.
+
+IRUS-UK is being developed by a consortium involving [Jisc](https://www.jisc.ac.uk/), [Cranfield University](https://www.cranfield.ac.uk/) and [Evidence Base](http://www.bcu.ac.uk/evidence-base).
+
+The DSpace IRUS-UK patch has been developed and is maintained by [Atmire](https://www.atmire.com), a registered service provider for DSpace.
+
+## <a name="Prerequisites"></a> Prerequisites
+
+### <a name="Codebase"></a> Codebase
 
 The IRUS changes have been released as a "patch" for DSpace as this allows for the easiest installation process of the incremental codebase. The code needed to install and deploy the IRUS changes can be found in the [Obtaining a recent patch file](#Obtaining-recent-patch) section, which needs to be applied to your DSpace source code.
 
 **__Important note__**: Below, we will explain you how to apply the patch to your existing installation. This will affect your source code. Before applying a patch, it is **always** recommended to create backup of your DSpace source code.
 
-In order to apply the patch, you will need to locate the **DSpace source code** on your server. That source code directory contains a directory _dspace_, as well as the following files:  _LICENSE_,  _NOTICE_ ,  _README_ , ....
+In order to apply the patch, you will need to locate the **DSpace source code** on your server. That source code directory should look similar to the following structure:
+
+```
+[dspace-src]
+  - dspace
+  - ...
+  - LICENSE
+  - NOTICE
+  - README 
+```
 
 For every release of DSpace, generally two release packages are available. One package has "src" in its name and the other one doesn't. The difference is that the release labelled "src" contains ALL of the DSpace source code, while the other release retrieves precompiled packages for specific DSpace artifacts from maven central. **The IRUS patches were designed to work on both "src" and other release packages of DSpace**.
 
@@ -34,211 +53,136 @@ To be able to install the patch, you will need the following prerequisites:
 * A running DSpace 4.x, 5.x or 6.x instance.
 * Git should be installed on the machine. The patch will be applied using several git commands as indicated in the next section.
 
-## Obtaining a recent patch file <a name="Obtaining-recent-patch"></a> ##
+### <a name="Firewall-verification"></a> Firewall verification
+
+The server should be able to access the tracker’s base URL. This can be verified easily using the following commands:
+
+```
+wget http://jusp.jisc.ac.uk/testcounter/
+wget http://jusp.jisc.ac.uk/counter/
+```
+
+If this results in an exception, please verify whether the firewall is configured to authorize outgoing connections.
+
+### <a name="Download-patch"></a> Download patch
 
 Atmire's modifications to a standard DSpace for IRUS are tracked on Github. The newest patch can therefore be generated from git.
 
-- DSPACE 4.x [https://github.com/atmire/IRUS/compare/dspace_4x…stable_4x.diff](https://github.com/atmire/IRUS/compare/dspace_4x…stable_4x.diff)
-- DSPACE 5.x [https://github.com/atmire/IRUS/compare/dspace_5x…stable_5x.diff](https://github.com/atmire/IRUS/compare/dspace_5x…stable_5x.diff)
-- DSPACE 6.x [https://github.com/atmire/IRUS/compare/dspace_6x…stable_6x.diff](https://github.com/atmire/IRUS/compare/dspace_6x…stable_6x.diff)
+| DSpace | Patch                                                                       |
+| ------ | --------------------------------------------------------------------------- |
+| 4.x    | [Download](https://github.com/atmire/IRUS/compare/dspace_4x…stable_4x.diff) |
+| 5.x    | [Download](https://github.com/atmire/IRUS/compare/dspace_5x…stable_5x.diff) |
+| 6.x    | [Download](https://github.com/atmire/IRUS/compare/dspace_6x…stable_6x.diff) |
 
-Save this file under a meaningful name. It will be later referred to as \<patch file\>
 
-## Patch installation <a name="Patch-installation"></a> ##
+Save this file under a meaningful name. It will later be referred to as `<patch>` .
+
+## <a name="Installation"></a> Installation
 
 To install the patch, the following steps will need to be performed.
 
-### 1. Go to the DSpace Source directory <a name="goto-DSpace-Source"></a> ###
+### <a name="Installation-src-dir"></a> 1. Go to the `dspace` directory
 
 This folder should have a structure similar to:
-dspace
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    config
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    modules
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    ...
-pom.xml
-
-### 2. Run the Git command to check whether the patch can be correctly applied <a name="Run-git-command"></a> ###
-
-Run the following command where \<patch file\> needs to be replaced with the name of the patch:
 
 ```
-git apply --check <patch file>
+[dspace-src]
+  - dspace          <-- Change the working directory to this folder
+      - config
+      - modules
+      - ...
+      - pom.xml
+  - ...
+  - LICENSE
+  - NOTICE
+  - README 
 ```
 
-This command will return whether it is possible to apply the patch to your installation. This should pose no problems in case the DSpace is not customized or in case not much customizations are present.
+### <a name="Check-patch"></a> 2. Check patch compatibility  ###
+
+Run the following command where `<patch>` needs to be replaced with the name of the patch:
+
+```bash
+git apply --check <patch>
+```
+
+This command will return whether it is possible to apply the patch to your installation. This should pose no problems in case the DSpace is not customized or in case few customizations are present.
 In case the check is successful, the patch can be installed as explained in the next steps.
 
 
-### 3. Apply the patch <a name="Apply-patch"></a> ###
+### <a name="Apply-patch"></a> 3. Apply the patch ###
 
-To apply the patch, the following command should be run where \<patch file\> is replaced with the name of the patch file.
+To apply the patch, the following command should be run where  `<patch>` is replaced with the name of the patch file.
 
+```bash
+git apply --whitespace=nowarn --reject <patch file>
 ```
-git apply <patch file>
-```
 
-Applying the patch should result in an output similar to this
+This command will tell git to apply the patch and ignore unharmful whitespace issues. The `--reject` flag instructs the command to continue when conflicts are encountered and saves the corresponding code hunks to a `.rej` file so you can review and apply them manually later on. This flag can be omitted if desired.
+
+Applying the patch should result in an output similar to the following:
 
 ```
 patching file dspace/config/launcher.xml
 patching file dspace/config/modules/stats.cfg
 patching file dspace/config/spring/jspui/open-url-listeners.xml
 patching file dspace/config/spring/xmlui/open-url-listeners.xml
-patching file dspace/modules/atmire-statistics-exporter/atmire-statistics-exporter-
-api/pom.xml
-patching file dspace/modules/atmire-statistics-exporter/atmire-statistics-exporter-
-api/src/main/java/com/atmire/statistics/export/ExportUsageEventListener.java
-patching file dspace/modules/atmire-statistics-exporter/atmire-statistics-exporter-
-api/src/main/java/com/atmire/statistics/export/OpenUrlTrackerLogger.java
 ...
-...
+
 ```
 
-There may be various warnings about whitespaces, but these will pose no problems when applying the patch and can be ignored.
-Some IDE's also have a built in ui which allows the user to apply patches manually.
-This might also help during conflicts.
+Some IDEs might have a built-in UI which allows you to apply patches visually. This could help during conflicts.
 
-### 4. Rebuild and redeploy your repository <a name="Rebuild-redeploy"></a> ###
+### <a name="Tracker-configuration"></a> 4. Tracker configuration
+
+**PRODUCTION REPOSITORIES ONLY**
+
+By default your repository will sent data to a TEST tracker to avoid sending unintentional test usage data. On production servers, please change the `tracker.environment` configuration (or `stats.tracker.environment` in case of DSpace 6.x) found in `[dspace-src]/dspace/config/modules/stats.cfg` to `production` to start sending data to the live IRUS tracker.
+
+```
+tracker.environment = production
+```
+
+A complete overview of all configuration options is available below.
+
+### <a name="Rebuild-redeploy"></a> 5. Rebuild and redeploy
 
 After the patch has been applied, the repository will need to be rebuild.
 DSpace repositories are typically built using Maven and deployed using Ant.
 
-### 5. Restart Tomcat <a name="Restart-tomcat"></a> ###
+### <a name="Restart-tomcat"></a> 6. Restart Tomcat
 
-After the repository has been rebuilt and redeployed, Tomcat will need to be restarted to bring the changes to production.
+After the repository has been rebuilt and redeployed, Tomcat will need to be restarted to bring the changes live.
 
-### 6. Verify the firewall <a name="Firewall-verification"></a> ###
+## <a name="Configuration-overview"></a> Configuration overview
 
-The server should be able to access the tracker’s base URL. This can be verified easily using the command:
+A new `stats.cfg` file will be created in `[dspace-src]/dspace/config/modules`.
 
-```
-wget http://jusp.jisc.ac.uk/counter/
-```
+> **Important note**: all configurations in DSpace 6.x are prefixed with `stats.`, e.g. `stats.tracker.type-field`.
 
-If this results in an exception, please verify whether the firewall is configured to authorize outgoing connections.
+| Property | Description | Default 
+| -------- | ----------- | -------|
+|`tracker.type-field`| Metadata field to check if certain items should be excluded from tracking. If empty or commented out, all items are tracked. |All
+|`tracker.type-value`| The values in the above metadata field that will be considered to be tracked.|All
+|`tracker.environment`| The tracker environment determines to which url the statistics are exported.| test
+|`tracker.testurl`| The url to which the trackings are exported when testing.|
+|`tracker.produrl`| The url to which the trackings are exported in production.|
+|`tracker.urlversion`| Tracker version|
+|`dspace.type`| The UI utilized by DSpace.| xmlui
+|`spider.ipmatch.enabled`| Boolean whether to ignore spider trackings; uses the lists in `/config/spiders`| true
+|`spiders.agentempty.enabled`| Boolean whether to ignore trackings originating from requests having an empty `User-Agent` header (most likely not a user browser).|false 
+|`spiders.agentregex.enabled`| Boolean whether `User-Agent` should be matched against a known lists of user agents (provided by an online service; downloaded during DSpace build).| true
+|`spiders.agentregex.regexfile`| Location where the user agents file should be downloaded to.|
 
-# Configuration <a name="Configuration"></a> #
 
-A new `stats.cfg` file has been created in the modules configuration directory to offer compatibility with your repository. Below is an excerpt from the configuration and a short explanation of every property that is used.
+## <a name="Additional-functionality"></a> Additional functionality
+### <a name="Failed-trackings"></a> Retry failed trackings
+If the IRUS-UK tracker is down or some other kind of error should occur preventing from committing to the tracker, the record is stored in the database in a separate table (`OpenUrlTracker`) created automatically during deployment. Committing these entries can be tried again using the following command.
 
-> By default your repository will sent data to a TEST tracker. Please change `tracker.environment` to `production` to start sending data to the live IRUS tracker.
-
-###### DSpace 4 and DSpace 5 configuration ######
-
-```
-#-----------------------#
-# Atmire stats exporter #
-#-----------------------#
-
-# OPTIONAL metadata field used for filtering.
-# If items with specific values for the "dc.type" field should be excluded, "dc.type" should be placed here.
-# This should comply to the syntax schema.element.qualified or schema.element if the qualifier is null.
-# tracker.type-field = dc.type
-# If "tracker.type-field" is set, the list of values must be defined in "tracker.type-value".
-# This lists a comma separated list of values that will be excluded for the given field.
-# tracker.type-value = Article, Postprint
-
-# Set the tracker environment to "test" or "production". Defaults to "test" if empty.
-# The URL used by the test environment can be configured in property tracker.testurl
-# The URL used by the production environment can be configured in property tracker.produrl
-tracker.environment = test
-# The url used to test the submission of tracking info to.
-tracker.testurl = https://jusp.jisc.ac.uk/testcounter/
-# The base url for submitting the tracking info to.
-tracker.produrl = https://jusp.jisc.ac.uk/counter/
-# Identifies data as OpenURL 1.0
-tracker.urlversion = Z39.88-2004
-
-# The deployed user interface should be provided to build correct links to files.
-# The dspace.type field can be set to either "xmlui" or "jspui".
-dspace.type = xmlui
-
-# Spider options
-spider.ipmatch.enabled = true
-spider.agentempty.enabled = false
-spider.agentregex.enabled = true
-# Default is downloaded during build: ${dspace.dir}/config/COUNTER_Robots_list_Jul2016.txt
-spider.agentregex.regexfile = ${dspace.dir}/config/COUNTER_Robots_list_Jul2016.txt
+```bash
+[deployed-dspace]/bin/dspace retry-tracker
 ```
 
-|Property |Usage |Default 
-| --------|--------| -------|
-|tracker.type-field| Only a certain set of file downloads can be sent depending on the value of a certain metadata field, the metadata field to check is configured in this property.|All stats are sent 
-|tracker.type-value| The values in the above metadata field that will be processed.|All stats are sent 
-|tracker.environment | The tracker environment determines to which url the statistics are exported.| test
-|tracker.testurl | The url to which the stats are exported when testing.| N/A
-|tracker.produrl | The url to which the stats are exported in production.| N/A
-|tracker.urlversion| Tracker version| N/A
-|dspace.type| The url to download a file differs between xmlui & jspui, so the exporter needs to know which link to create.| xmlui
-|spider.ipmatch.enabled| If the IP address matches a spider IP addresses from a txt list that comes with your dspace installation (this is the default implementation - lists in /config/spiders/)| true
-|spiders.agentempty.enabled | Checks the user agent (a header string that comes with every request). If this agent is empty, it is most likely not a user browser. This verification is disabled by default.|false 
-|spiders.agentregex.enabled| Matches the user agent vs a defined set of regular expressions (provided by an online service), which are downloaded during installation of your dspace repository, or during an update.| true
-|spiders.agentregex.regexfile| Defines where the file should be downloaded to/where the system should search for the regexes| N/A
-
-
-###### DSpace 6 configuration ######
-
-```
-#-----------------------#
-# Atmire stats exporter #
-#-----------------------#
-
-# OPTIONAL metadata field used for filtering.
-# If items with specific values for the "dc.type" field should be excluded, "dc.type" should be placed here.
-# This should comply to the syntax schema.element.qualified or schema.element if the qualifier is null.
-# stats.tracker.type-field = dc.type
-# If "tracker.type-field" is set, the list of values must be defined in "tracker.type-value".
-# This lists a comma separated list of values that will be excluded for the given field.
-# stats.tracker.type-value = Article, Postprint
-
-# Set the tracker environment to "test" or "production". Defaults to "test" if empty.
-# The URL used by the test environment can be configured in property tracker.testurl
-# The URL used by the production environment can be configured in property tracker.produrl
-stats.tracker.environment = test
-# The url used to test the submission of tracking info to.
-stats.tracker.testurl = https://jusp.jisc.ac.uk/testcounter/
-# The base url for submitting the tracking info to.
-stats.tracker.produrl = https://jusp.jisc.ac.uk/counter/
-# Identifies data as OpenURL 1.0
-stats.tracker.urlversion = Z39.88-2004
-
-# The deployed user interface should be provided to build correct links to files.
-# The dspace.type field can be set to either "xmlui" or "jspui".
-stats.dspace.type = xmlui
-
-# Spider options
-stats.spider.ipmatch.enabled = true
-stats.spider.agentempty.enabled = false
-stats.spider.agentregex.enabled = true
-#  Default is downloaded during build: ${dspace.dir}/config/COUNTER_Robots_list_Jul2016.txt
-spider.agentregex.regexfile = ${dspace.dir}/config/COUNTER_Robots_list_Jul2016.txt
-```
-
-|Property |Usage |Default 
-| --------|--------| -------|
-|stats.tracker.type-field| Only a certain set of file downloads can be sent depending on the value of a certain metadata field, the metadata field to check is configured in this property.|All stats are sent 
-|stats.tracker.type-value| The values in the above metadata field that will be processed.|All stats are sent 
-|stats.tracker.environment | The tracker environment determines to which url the statistics are exported.| test
-|stats.tracker.testurl | The url to which the stats are exported when testing.| N/A
-|stats.tracker.produrl | The url to which the stats are exported in production.| N/A
-|stats.tracker.urlversion| Tracker version| N/A
-|stats.dspace.type| The url to download a file differs between xmlui & jspui, so the exporter needs to know which link to create.| xmlui
-|stats.spider.ipmatch.enabled| If the IP address matches a spider IP addresses from a txt list that comes with your dspace installation (this is the default implementation - lists in /config/spiders/)| true
-|stats.spiders.agentempty.enabled | Checks the user agent (a header string that comes with every request). If this agent is empty, it is most likely not a user browser. This verification is disabled by default.|false 
-|stats.spiders.agentregex.enabled| Matches the user agent vs a defined set of regular expressions (provided by an online service), which are downloaded during installation of your dspace repository, or during an update.| true
-|stats.spiders.agentregex.regexfile| Defines where the file should be downloaded to/where the system should search for the regexes| N/A
-
-
-# Functionality of the patch <a name="Patch-functionality"></a> #
-## Retrying failed commits <a name="Failed-commits-retry"></a> ##
-If the OpenURLTracker system is down or some other kind of error should occur, which prevents the ExportUsageEventLogger from committing to the tracker, this record is stored in the database (using the separate table OpenUrlTracker created automatically during deployment). Committing these entries can be tried again at a later time via the //retry-tracker// command (command line). This will iterate over all the logged entries and retry committing them. If they fail again, they remain in the table, if they succeed, they are removed from this table.
-
-This script can be executed by navigating to the //"bin"// folder inside your **deployed dspace installation** (not the source where the patch has been applied - it should not contain a "//src//" folder).
-
-The //retry-tracker// script can be executed using the following commando:
-
-```
-./dspace retry-tracker
-```
+This will iterate over all the logged entries and retry committing them. If they fail again, they remain in the table, if they succeed, they are removed.
 
 It is strongly advised to schedule this script to be executed daily or weekly (preferable at low load-times during the night or weekend). If there are no failed entries, the script will not perform any actions and exit immediately.
