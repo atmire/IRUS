@@ -19,7 +19,7 @@
 
 ## <a name="IRUS"></a> IRUS-UK
 
-IRUS (Institutional Repository Usage Statistics) enables UK Institutional Repositories (IRs) to share and expose statistics based on the COUNTER standard. It will provide a nation-wide view of UK repository usage to benefit organisations such as [Jisc](https://www.jisc.ac.uk/), it will offer opportunities for benchmarking and act as an intermediary between UK repositories and other agencies.
+IRUS (Institutional Repository Usage Statistics) enables UK Institutional Repositories (IRs) to share and expose statistics based on the COUNTER standard. It provides a nation-wide view of UK repository usage to benefit organisations such as [Jisc](https://www.jisc.ac.uk/), offers opportunities for benchmarking and acts as an intermediary between UK repositories and other agencies.
 
 IRUS-UK collects raw usage data from UK IRs and processes these data into COUNTER-compliant statistics. This provides repositories with comparable, authoritative, standards-based data.
 
@@ -31,7 +31,7 @@ The DSpace IRUS-UK patch has been developed and is maintained by [Atmire](https:
 
 ### <a name="Codebase"></a> Codebase
 
-The IRUS changes have been released as a "patch" for DSpace as this allows for the easiest installation process of the incremental codebase. The code needed to install and deploy the IRUS changes can be found in the [Obtaining a recent patch file](#Obtaining-recent-patch) section, which needs to be applied to your DSpace source code.
+The IRUS changes have been released as a "patch" for DSpace as this allows for the easiest installation process of the incremental codebase. The code needed to install and deploy the IRUS changes can be found in the [Download patch](#Download-patch) section, which needs to be applied to your DSpace source code.
 
 **__Important note__**: Below, we will explain you how to apply the patch to your existing installation. This will affect your source code. Before applying a patch, it is **always** recommended to create backup of your DSpace source code.
 
@@ -115,7 +115,7 @@ In case the check is successful, the patch can be installed as explained in the 
 To apply the patch, the following command should be run where  `<patch>` is replaced with the name of the patch file.
 
 ```bash
-git apply --whitespace=nowarn --reject <patch file>
+git apply --whitespace=nowarn --reject <patch>
 ```
 
 This command will tell git to apply the patch and ignore unharmful whitespace issues. The `--reject` flag instructs the command to continue when conflicts are encountered and saves the corresponding code hunks to a `.rej` file so you can review and apply them manually later on. This flag can be omitted if desired.
