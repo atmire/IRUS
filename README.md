@@ -6,7 +6,7 @@
     - [Firewall verification](#Firewall-verification)
     - [Download patch](#Download-patch)
 - [Installation](#Installation)
-    - [1. Go to the DSpace Source directory](#Installation-src-dir)
+    - [1. Go to the dspace directory](#Installation-src-dir)
     - [2. Check patch compatibility](#Check-patch)
     - [3. Apply the patch](#Apply-patch)
     - [4. Tracker configuration](#Tracker-configuration)
