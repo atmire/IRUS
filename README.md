@@ -148,7 +148,7 @@ A complete overview of all configuration options is available below.
 
 ### <a name="Rebuild-redeploy"></a> 5. Rebuild and redeploy
 
-After the patch has been applied, the repository will need to be rebuild.
+After the patch has been applied, the repository will need to be rebuilt.
 DSpace repositories are typically built using Maven and deployed using Ant.
 
 ### <a name="Restart-tomcat"></a> 6. Restart Tomcat
