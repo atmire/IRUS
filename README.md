@@ -125,12 +125,11 @@ This command will tell git to apply the patch and ignore unharmful whitespace is
 Applying the patch should result in an output similar to the following:
 
 ```
-patching file dspace/config/launcher.xml
-patching file dspace/config/modules/stats.cfg
-patching file dspace/config/spring/jspui/open-url-listeners.xml
-patching file dspace/config/spring/xmlui/open-url-listeners.xml
 ...
-
+Applied patch dspace/modules/pom.xml cleanly.
+Applied patch dspace/modules/xmlui/pom.xml cleanly.
+Applied patch dspace/pom.xml cleanly.
+Applied patch dspace/src/main/config/build.xml cleanly.
 ```
 
 Some IDEs might have a built-in UI which allows you to apply patches visually. This could help during conflicts.
