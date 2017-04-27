@@ -53,6 +53,7 @@ For every release of DSpace, generally two release packages are available. One p
 To be able to install the patch, you will need the following prerequisites:
 
 * A running DSpace 4.x, 5.x or 6.x instance.
+* Maven 3.2.2 or greater.
 * Git should be installed on the machine. The patch will be applied using several git commands as indicated in the next section.
 
 ### <a name="Firewall-verification"></a> Firewall verification
