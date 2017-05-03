@@ -1,4 +1,4 @@
-# DSpace Elsevier patch
+# DSpace IRUS-UK patch
 
 ## Introduction
 
