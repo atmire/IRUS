@@ -7,16 +7,13 @@
  */
 package org.dspace.statistics.util;
 
-import org.apache.log4j.Logger;
-import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.statistics.factory.StatisticsServiceFactory;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.regex.*;
+import javax.servlet.http.*;
+import org.apache.log4j.*;
+import org.dspace.services.factory.*;
+import org.dspace.statistics.factory.*;
 
 /**
  * SpiderDetector is used to find IP's that are spiders...
@@ -38,7 +35,7 @@ public class SpiderDetector {
      * Sparse HAshTable structure to hold IP Address Ranges.
      */
     private static IPTable table = null;
-    private static Set<Pattern> spidersRegex = null;
+    private static Set<Pattern> spidersRegex = Collections.synchronizedSet(new HashSet<Pattern>());
     private static Set<String> spidersMatched = null;
 
     /**
@@ -92,7 +89,7 @@ public class SpiderDetector {
         private loader to populate the table from files.
      */
 
-    private synchronized static void loadSpiderIpAddresses() {
+    private static synchronized void loadSpiderIpAddresses() {
         if (table == null) {
             table = new IPTable();
 
@@ -208,8 +205,10 @@ public class SpiderDetector {
             log.debug("spider.agentregex");
             return true;
         } else {
-            if (spidersRegex == null)
+            synchronized(spidersRegex) {
+                if (spidersRegex.isEmpty())
                 loadSpiderRegexFromFile();
+            }
 
             if (spidersRegex != null) {
                 for (Object regex : spidersRegex.toArray()) {
@@ -236,7 +235,6 @@ public class SpiderDetector {
      * Original file downloaded from http://www.projectcounter.org/r4/COUNTER_robot_txt_list_Jan_2011.txt during build
      */
     public static void loadSpiderRegexFromFile() {
-        spidersRegex = new HashSet<>();
         String spidersTxt = DSpaceServicesFactory.getInstance().getConfigurationService().getPropertyAsType("stats.spider.agentregex.regexfile", String.class);
         DataInputStream in = null;
         try {
