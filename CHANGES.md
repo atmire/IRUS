@@ -12,6 +12,9 @@ Unreleased changes can be found on the stable_4x, stable_5x and stable_6x branch
 - Validation: ...
 - Testing improvements: ...
 
+## January 24th, 2019 (DSpace 6 patch version only)
+- Fix: added the "stats" prefix to the regexfile configuration property in stats.cfg.
+
 ## March 12th, 2018
 
 - Fix: Applied synchronization to the loading of the spiders lists to prevent lists from being loaded multiple times.
