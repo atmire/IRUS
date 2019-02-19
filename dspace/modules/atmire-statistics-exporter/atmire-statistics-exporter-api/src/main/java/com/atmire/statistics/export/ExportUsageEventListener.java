@@ -127,7 +127,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
     public void receiveEvent(Event event) {
         if (event instanceof UsageEvent) {
             UsageEvent ue = (UsageEvent) event;
-            Context context= new Context();
+            Context context = ue.getContext();
             try {
                 //Check for item investigation
                 if (ue.getObject() instanceof Item) {
