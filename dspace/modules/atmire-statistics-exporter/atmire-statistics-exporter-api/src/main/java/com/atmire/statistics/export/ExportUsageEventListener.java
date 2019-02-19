@@ -80,6 +80,9 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
 
     private static String trackerUrlVersion;
 
+    private static final String ITEM_VIEW = "Investigation";
+    private static final String BITSTREAM_DOWNLOAD = "Request";
+
 
     public void init(Context context) {
         try {
@@ -126,7 +129,18 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
             UsageEvent ue = (UsageEvent) event;
             Context context= new Context();
             try {
-                //First of all check for a bitstream download event
+                //Check for item investigation
+                if (ue.getObject() instanceof Item) {
+                    Item item = (Item) ue.getObject();
+                    if(item.isArchived() && !ContentServiceFactory.getInstance().getItemService().canEdit(context, item)) {
+                        init(context);
+
+                        if (shouldProcessItem(context, item)) {
+                            processItem(ue.getContext(), item, null, ue.getRequest(), ITEM_VIEW);
+                        }
+                    }
+                }
+                //Check for bitstream download
                 if (ue.getObject() instanceof Bitstream) {
                     Bitstream bit = (Bitstream) ue.getObject();
                     //Check for an item
@@ -142,24 +156,8 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
                                 if(item.isArchived() && !ContentServiceFactory.getInstance().getItemService().canEdit(context, item)) {
                                     //Check if we have a valid type of item !
                                     init(context);
-                                    if (trackerType != null && trackerValues != null) {
-                                        List<MetadataValue> metadataValueList = ContentServiceFactory.getInstance().getMetadataValueService().findByField(context, trackerType);
-                                        if(metadataValueList.size()>0){
-                                            //Find out if we have a type that matches one of our values
-                                            for (MetadataValue type : metadataValueList) {
-                                                if (!trackerValues.contains(type.getValue().toLowerCase())) {
-                                                    //We have found a type so process this bitstream
-                                                    processItem(ue.getContext(), item, bit, ue.getRequest());
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        else {
-                                            processItem(ue.getContext(), item, bit, ue.getRequest());
-                                        }
-                                    } else {
-                                        //no tracker.type-field => process all items
-                                        processItem(ue.getContext(), item, bit, ue.getRequest());
+                                    if (shouldProcessItem(context, item)) {
+                                        processItem(ue.getContext(), item, bit, ue.getRequest(), BITSTREAM_DOWNLOAD);
                                     }
                                 }
                             }
@@ -184,7 +182,30 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         }
     }
 
-    private void processItem(Context context, Item item, Bitstream bitstream, HttpServletRequest request) throws IOException, SQLException {
+    private boolean shouldProcessItem(Context context, final Item item) throws IOException, SQLException {
+        if (trackerType != null && trackerValues != null) {
+            List<MetadataValue> types = ContentServiceFactory.getInstance().getMetadataValueService().findByField(context, trackerType);
+
+            if (!types.isEmpty()) {
+                //Find out if we have a type that needs to be excluded
+                for (MetadataValue type : types) {
+                    if (trackerValues.contains(type.getValue().toLowerCase())) {
+                        //We have found no type so process this item
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                // No types in this item, so not excluded
+                return true;
+            }
+        } else {
+            // No types to be excluded
+            return true;
+        }
+    }
+
+    private void processItem(Context context, Item item, Bitstream bitstream, HttpServletRequest request, String eventType) throws IOException, SQLException {
         //We have a valid url collect the rest of the data
         String clientIP = request.getRemoteAddr();
         if (ConfigurationManager.getBooleanProperty("useProxies", false) && request.getHeader("X-Forwarded-For") != null) {
@@ -201,20 +222,32 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         }
         String clientUA = StringUtils.defaultIfBlank(request.getHeader("USER-AGENT"), "");
         String referer = StringUtils.defaultIfBlank(request.getHeader("referer"), "");
-        String sessionID =  StringUtils.defaultIfBlank(request.getSession().getId(), "");
-        String mimeType = bitstream.getFormat(context).getMIMEType();
-        //Start adding our data
-        String data = "";
-        data += URLEncoder.encode("url_ver", "UTF-8") + "=" + URLEncoder.encode(trackerUrlVersion, "UTF-8");
-        data += "&" + URLEncoder.encode("req_id", "UTF-8") + "=" + URLEncoder.encode("urn:ip:" + clientIP, "UTF-8");
-        data += "&" + URLEncoder.encode("req_dat", "UTF-8") + "=" + URLEncoder.encode(clientUA, "UTF-8");
-        data += "&" + URLEncoder.encode("rft.artnum", "UTF-8") + "=" + URLEncoder.encode("oai:" + ConfigurationManager.getProperty("dspace.hostname") + ":" + item.getHandle(), "UTF-8");
-        data += "&" + URLEncoder.encode("rfr_dat", "UTF-8") + "=" + URLEncoder.encode(referer, "UTF-8");
-//        data += "&" + URLEncoder.encode("svc.format", "UTF-8") + "=" + URLEncoder.encode(mimeType, "UTF-8");
-        data += "&" + URLEncoder.encode("rfr_id", "UTF-8") + "=" + URLEncoder.encode(ConfigurationManager.getProperty("dspace.hostname"), "UTF-8");
-        data += "&" + URLEncoder.encode("url_tim", "UTF-8") + "=" + URLEncoder.encode(new DCDate(new Date()).toString(), "UTF-8");
-        data += "&" + URLEncoder.encode("svc.session", "UTF-8") + "=" + URLEncoder.encode(sessionID, "UTF-8");
 
+        //Start adding our data
+        StringBuilder data = new StringBuilder();
+        data.append(URLEncoder.encode("url_ver", "UTF-8") + "=" + URLEncoder.encode(trackerUrlVersion, "UTF-8"));
+        data.append("&").append(URLEncoder.encode("req_id", "UTF-8")).append("=").append( URLEncoder.encode("urn:ip:" + clientIP, "UTF-8"));
+        data.append("&").append(URLEncoder.encode("req_dat", "UTF-8")).append("=").append( URLEncoder.encode(clientUA, "UTF-8"));
+        data.append("&").append(URLEncoder.encode("rft.artnum", "UTF-8")).append("=").append( URLEncoder.encode("oai:" + ConfigurationManager.getProperty("dspace.hostname") + ":" + item.getHandle(), "UTF-8"));
+        data.append("&").append(URLEncoder.encode("rfr_dat", "UTF-8")).append("=").append( URLEncoder.encode(referer, "UTF-8"));
+        data.append("&").append(URLEncoder.encode("rfr_id", "UTF-8")).append("=").append( URLEncoder.encode(ConfigurationManager.getProperty("dspace.hostname"), "UTF-8"));
+        data.append("&").append(URLEncoder.encode("url_tim", "UTF-8")).append("=").append( URLEncoder.encode(new DCDate(new Date()).toString(), "UTF-8"));
+
+        if (BITSTREAM_DOWNLOAD.equals(eventType)) {
+            String bitstreamInfo = getBitstreamInfo(item, bitstream);
+            data.append("&").append( URLEncoder.encode("svc_dat", "UTF-8")).append("=").append( URLEncoder.encode(bitstreamInfo, "UTF-8"));
+            data.append("&").append( URLEncoder.encode("rft_dat", "UTF-8")).append("=").append( URLEncoder.encode(BITSTREAM_DOWNLOAD, "UTF-8"));
+        } else if (ITEM_VIEW.equals(eventType)) {
+            String itemInfo = getItemInfo(item);
+            data.append("&").append( URLEncoder.encode("svc_dat", "UTF-8")).append("=").append( URLEncoder.encode(itemInfo, "UTF-8"));
+            data.append("&").append( URLEncoder.encode("rft_dat", "UTF-8")).append("=").append( URLEncoder.encode(ITEM_VIEW, "UTF-8"));
+        }
+
+        processUrl(context, baseUrl + "?" + data.toString());
+
+    }
+
+    private String getBitstreamInfo(final Item item, final Bitstream bitstream) {
         //only for jsp ui
         // http://demo.dspace.org/jspui/handle/10673/2235
         // http://demo.dspace.org/jspui/bitstream/10673/2235/1/Captura.JPG
@@ -227,7 +260,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         //
 
         String uiType = ConfigurationManager.getProperty("stats", "dspace.type");
-        StringBuffer sb = new StringBuffer(ConfigurationManager.getProperty("dspace.url"));
+        StringBuilder sb = new StringBuilder(ConfigurationManager.getProperty("dspace.url"));
         if ("jspui".equals(uiType)) {
 
             sb.append("/bitstream/").append(item.getHandle()).append("/").append(bitstream.getSequenceID());
@@ -273,12 +306,16 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
 
             sb.append("?sequence=").append(bitstream.getSequenceID());
         }
-
-        data += "&" + URLEncoder.encode("svc_dat", "UTF-8") + "=" + URLEncoder.encode(sb.toString(), "UTF-8");
-
-        processUrl(context, baseUrl + "?" + data);
-
+        return sb.toString();
     }
+
+    private String getItemInfo(final Item item) {
+        StringBuilder sb = new StringBuilder(ConfigurationManager.getProperty("dspace.url"));
+        sb.append("/handle/").append(item.getHandle());
+
+        return sb.toString();
+    }
+
 
     private static void processUrl(Context c, String urlStr) throws IOException, SQLException {
         log.debug("Prepared to send url to tracker URL: " + urlStr);
