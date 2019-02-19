@@ -99,7 +99,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
                         for (String val : values)
                             trackerValues.add(val.trim().toLowerCase());
                     } else {
-                        trackerValues.add(metadataValues);
+                        trackerValues.add(metadataValues.trim().toLowerCase());
                     }
                 } else
                     trackerValues = null;
