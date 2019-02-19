@@ -37,9 +37,10 @@ import org.dspace.app.util.Util;
 import org.dspace.content.*;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.MetadataFieldService;
-import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
 import org.dspace.core.LogManager;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.services.model.Event;
 import org.dspace.statistics.util.SpiderDetector;
 import org.dspace.usage.AbstractUsageEventListener;
@@ -83,35 +84,35 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
     private static final String ITEM_VIEW = "Investigation";
     private static final String BITSTREAM_DOWNLOAD = "Request";
 
+    private static ConfigurationService configurationService;
+
 
     public void init(Context context) {
         try {
+            if (configurationService == null) {
+                configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
+            }
             if (trackerType == null) {
                 trackerType = resolveConfigPropertyToMetadataField(context,"tracker.type-field");
 
-                String metadataValues = ConfigurationManager.getProperty("stats", "tracker.type-value");
-                if (metadataValues != null && 0 < metadataValues.trim().length()) {
-                    trackerValues = new ArrayList<String>();
-                    if (metadataValues.contains(",")) {
-                        //We have more then one value
-                        String[] values = metadataValues.split(",");
-                        //We add all the values withouth spaces & lowercase so we don't have to worry about the cases.
-                        for (String val : values)
-                            trackerValues.add(val.trim().toLowerCase());
-                    } else {
-                        trackerValues.add(metadataValues);
-                    }
-                } else
+                String[] metadataValues = configurationService.getArrayProperty("stats.tracker.type-value");
+                 if (metadataValues.length > 0) {
+                     trackerValues = new ArrayList<>();
+                     for (String metadataValue : metadataValues) {
+                         trackerValues.add(metadataValue.toLowerCase());
+                     }
+                 } else {
                     trackerValues = null;
+                 }
 
-                if(StringUtils.equals(ConfigurationManager.getProperty("stats","tracker.environment"), "production")){
-                    baseUrl = ConfigurationManager.getProperty("stats", "tracker.produrl");
+                if(StringUtils.equals(configurationService.getProperty("stats.tracker.environment"), "production")){
+                    baseUrl = configurationService.getProperty("stats.tracker.produrl");
                 }
                 else {
-                    baseUrl = ConfigurationManager.getProperty("stats", "tracker.testurl");
+                    baseUrl = configurationService.getProperty("stats.tracker.testurl");
                 }
 
-                trackerUrlVersion = ConfigurationManager.getProperty("stats", "tracker.urlversion");
+                trackerUrlVersion = configurationService.getProperty("stats.tracker.urlversion");
 
 
             }
@@ -135,7 +136,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
                     if(item.isArchived() && !ContentServiceFactory.getInstance().getItemService().canEdit(context, item)) {
                         init(context);
 
-                        if (shouldProcessItem(context, item)) {
+                        if (shouldProcessItem(item)) {
                             processItem(ue.getContext(), item, null, ue.getRequest(), ITEM_VIEW);
                         }
                     }
@@ -156,7 +157,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
                                 if(item.isArchived() && !ContentServiceFactory.getInstance().getItemService().canEdit(context, item)) {
                                     //Check if we have a valid type of item !
                                     init(context);
-                                    if (shouldProcessItem(context, item)) {
+                                    if (shouldProcessItem(item)) {
                                         processItem(ue.getContext(), item, bit, ue.getRequest(), BITSTREAM_DOWNLOAD);
                                     }
                                 }
@@ -182,9 +183,9 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         }
     }
 
-    private boolean shouldProcessItem(Context context, final Item item) throws IOException, SQLException {
+    private boolean shouldProcessItem(Item item) {
         if (trackerType != null && trackerValues != null) {
-            List<MetadataValue> types = ContentServiceFactory.getInstance().getMetadataValueService().findByField(context, trackerType);
+            List<MetadataValue> types = ContentServiceFactory.getInstance().getItemService().getMetadata(item, trackerType.getMetadataSchema().getName(), trackerType.getElement(), trackerType.getQualifier(), Item.ANY);
 
             if (!types.isEmpty()) {
                 //Find out if we have a type that needs to be excluded
@@ -208,7 +209,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
     private void processItem(Context context, Item item, Bitstream bitstream, HttpServletRequest request, String eventType) throws IOException, SQLException {
         //We have a valid url collect the rest of the data
         String clientIP = request.getRemoteAddr();
-        if (ConfigurationManager.getBooleanProperty("useProxies", false) && request.getHeader("X-Forwarded-For") != null) {
+        if (configurationService.getBooleanProperty("useProxies", false) && request.getHeader("X-Forwarded-For") != null) {
             /* This header is a comma delimited list */
             for (String xfip : request.getHeader("X-Forwarded-For").split(",")) {
                 /* proxy itself will sometime populate this header with the same value in
@@ -228,9 +229,9 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         data.append(URLEncoder.encode("url_ver", "UTF-8") + "=" + URLEncoder.encode(trackerUrlVersion, "UTF-8"));
         data.append("&").append(URLEncoder.encode("req_id", "UTF-8")).append("=").append( URLEncoder.encode("urn:ip:" + clientIP, "UTF-8"));
         data.append("&").append(URLEncoder.encode("req_dat", "UTF-8")).append("=").append( URLEncoder.encode(clientUA, "UTF-8"));
-        data.append("&").append(URLEncoder.encode("rft.artnum", "UTF-8")).append("=").append( URLEncoder.encode("oai:" + ConfigurationManager.getProperty("dspace.hostname") + ":" + item.getHandle(), "UTF-8"));
+        data.append("&").append(URLEncoder.encode("rft.artnum", "UTF-8")).append("=").append( URLEncoder.encode("oai:" + configurationService.getProperty("dspace.hostname") + ":" + item.getHandle(), "UTF-8"));
         data.append("&").append(URLEncoder.encode("rfr_dat", "UTF-8")).append("=").append( URLEncoder.encode(referer, "UTF-8"));
-        data.append("&").append(URLEncoder.encode("rfr_id", "UTF-8")).append("=").append( URLEncoder.encode(ConfigurationManager.getProperty("dspace.hostname"), "UTF-8"));
+        data.append("&").append(URLEncoder.encode("rfr_id", "UTF-8")).append("=").append( URLEncoder.encode(configurationService.getProperty("dspace.hostname"), "UTF-8"));
         data.append("&").append(URLEncoder.encode("url_tim", "UTF-8")).append("=").append( URLEncoder.encode(new DCDate(new Date()).toString(), "UTF-8"));
 
         if (BITSTREAM_DOWNLOAD.equals(eventType)) {
@@ -259,8 +260,8 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         // http://demo.dspace.org/xmlui/bitstream/handle/10673/2235/Captura.JPG?sequence=1
         //
 
-        String uiType = ConfigurationManager.getProperty("stats", "dspace.type");
-        StringBuilder sb = new StringBuilder(ConfigurationManager.getProperty("dspace.url"));
+        String uiType = configurationService.getProperty("stats.dspace.type");
+        StringBuilder sb = new StringBuilder(configurationService.getProperty("dspace.url"));
         if ("jspui".equals(uiType)) {
 
             sb.append("/bitstream/").append(item.getHandle()).append("/").append(bitstream.getSequenceID());
@@ -310,7 +311,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
     }
 
     private String getItemInfo(final Item item) {
-        StringBuilder sb = new StringBuilder(ConfigurationManager.getProperty("dspace.url"));
+        StringBuilder sb = new StringBuilder(configurationService.getProperty("dspace.url"));
         sb.append("/handle/").append(item.getHandle());
 
         return sb.toString();
@@ -403,7 +404,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
     }
 
     private static MetadataField resolveConfigPropertyToMetadataField(Context context, String fieldName) throws SQLException {
-        String metadataField = ConfigurationManager.getProperty("stats", fieldName);
+        String metadataField = configurationService.getProperty("stats." + fieldName);
         if (metadataField != null && 0 < metadataField.trim().length()) {
             metadataField = metadataField.trim();
             MetadataFieldService metadataFieldService = ContentServiceFactory.getInstance().getMetadataFieldService();
