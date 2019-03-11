@@ -227,7 +227,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         //Start adding our data
         StringBuilder data = new StringBuilder();
         data.append(URLEncoder.encode("url_ver", "UTF-8") + "=" + URLEncoder.encode(trackerUrlVersion, "UTF-8"));
-        data.append("&").append(URLEncoder.encode("req_id", "UTF-8")).append("=").append( URLEncoder.encode("urn:ip:" + clientIP, "UTF-8"));
+        data.append("&").append(URLEncoder.encode("req_id", "UTF-8")).append("=").append( URLEncoder.encode(clientIP, "UTF-8"));
         data.append("&").append(URLEncoder.encode("req_dat", "UTF-8")).append("=").append( URLEncoder.encode(clientUA, "UTF-8"));
         data.append("&").append(URLEncoder.encode("rft.artnum", "UTF-8")).append("=").append( URLEncoder.encode("oai:" + configurationService.getProperty("dspace.hostname") + ":" + item.getHandle(), "UTF-8"));
         data.append("&").append(URLEncoder.encode("rfr_dat", "UTF-8")).append("=").append( URLEncoder.encode(referer, "UTF-8"));
