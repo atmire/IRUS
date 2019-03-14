@@ -1,8 +1,14 @@
 # Functionality overview
 
-## Bitstream tracking
+# Usage tracking
+The patch will automatically send bitstream download hits and item views to the IRUS-UK service. There’s no manual action required.
+#### Bitstream tracking
 
-The patch will automatically send bitstream download hits and item views to the IRUS-UK service. There's no manual action required.
+Bitstream tracking is implemented in the DSpace 4.x/5.x/6.x patches
+
+#### Item view tracking
+
+Item views tracking is implemented in the DSpace 5.x/6.x patches
 
 ## Retry failed trackings
 

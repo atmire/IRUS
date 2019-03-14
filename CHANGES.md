@@ -12,7 +12,7 @@ Unreleased changes can be found on the stable_4x, stable_5x and stable_6x branch
 - Validation: ...
 - Testing improvements: ...
 
-## March 14th, 2019 (COUNTER R5 update)
+## March 14th, 2019 (COUNTER R5 update: DSpace 5 and DSpace 6 patch versions only)
 - Improvement: The new COUNTER release (R5) allows for reports that include 'Investigations' (item page views) and 'Requests' (file downloads). 
 This patch expands on the previously existing functionality and updates the sent information accordingly.
 - Improvement: Removal of svc_session parameter since other software isn't able to provide this info.

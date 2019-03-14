@@ -8,7 +8,7 @@ IRUS-UK collects raw usage data from UK IRs and processes these data into COUNTE
 
 IRUS-UK is being developed by a consortium involving [Jisc](https://www.jisc.ac.uk/), [Cranfield University](https://www.cranfield.ac.uk/) and [Evidence Base](http://www.bcu.ac.uk/evidence-base).
 
-This patch integrates the IRUS-UK service with DSpace. It allows for automated logging of Bitstream downloads and Item views to IRUS-UK.
+This patch integrates the IRUS-UK service with DSpace. It allows for automated logging of Bitstream downloads (DSpace 4.x/5.x/6.x)  and Item views (DSpace 5.x/6.x) to IRUS-UK.
 
 The DSpace IRUS-UK patch has been developed and is maintained by [Atmire](https://www.atmire.com), a registered service provider for DSpace.
 
