@@ -2,7 +2,7 @@
 
 ## Bitstream tracking
 
-The patch will automatically send download hits to the IRUS-UK service. There's no manual action required.
+The patch will automatically send bitstream download hits and item views to the IRUS-UK service. There's no manual action required.
 
 ## Retry failed trackings
 
