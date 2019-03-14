@@ -12,6 +12,13 @@ Unreleased changes can be found on the stable_4x, stable_5x and stable_6x branch
 - Validation: ...
 - Testing improvements: ...
 
+## March 14th, 2019 (COUNTER R5 update)
+- Improvement: The new COUNTER release (R5) allows for reports that include 'Investigations' (item page views) and 'Requests' (file downloads). 
+This patch expands on the previously existing functionality and updates the sent information accordingly.
+- Improvement: Removal of svc_session parameter since other software isn't able to provide this info.
+- Fix: Removal of 'urn:ip' prefix from the req_id parameter (Client IP address) since it has become irrelevant.
+- Fix: The logic for item type exclusion did not work when multiple types were present. 
+
 ## January 24th, 2019 (DSpace 6 patch version only)
 - Fix: added the "stats" prefix to the regexfile configuration property in stats.cfg.
 
