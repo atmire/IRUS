@@ -30,8 +30,8 @@ To be able to install the patch, you will need the following prerequisites:
 The server should be able to access the tracker’s base URL. This can be verified easily using the following commands:
 
 ```
-wget http://jusp.jisc.ac.uk/testcounter/
-wget http://jusp.jisc.ac.uk/counter/
+wget https://irus.jisc.ac.uk/counter/test/
+wget https://irus.jisc.ac.uk/counter/
 ```
 
 If *any* HTTP status code is returned you can reach the specified URL properly (even though it's a 403 or 500). If nothing is returned, the server is not able to reach the URL. Please verify whether the firewall is configured to authorize outgoing connections.
