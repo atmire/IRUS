@@ -7,8 +7,8 @@ To install the patch, the following steps will need to be performed.
 This folder should have a structure similar to:
 
 ```
-[dspace-src]
-  - dspace          <-- Change the working directory to this folder
+[dspace-src]          <-- Change the working directory to this folder
+  - dspace
       - config
       - modules
       - ...
