@@ -70,6 +70,16 @@ DSpace repositories are typically built using Maven and deployed using Ant.
 
 Please use `mvn clean package` instead of `mvn package` to avoid errors in the user interface. If `clean` is not specified some classes might not be updated correctly.
 
-## 6. Restart Tomcat
+## 6. Running flyway migration manually
+
+To make sure that the database contains the newly added 'OpenUrlTracker' table, it is advised to manually trigger a flyway migration, since flyway does not always run these migration automatically when 'newer' migrations have already been applied.
+In the installation directory of DSpace, run the following command.
+
+> bin/dspace database migrate ignored
+
+## 7. Restart Tomcat
 
 After the repository has been rebuilt and redeployed, Tomcat will need to be restarted to bring the changes live.
+
+
+
