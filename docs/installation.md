@@ -62,6 +62,11 @@ By default your repository will sent data to a TEST tracker to avoid sending uni
 ```
 tracker.environment = production
 ```
+Setting `tracker.environment` to production will make your repository send stats events to the URL configured in `tracker.produrl` (in the same file). This URL has originally been configured with the default IRUS production URL, i.e. https://irus.jisc.ac.uk/counter/. If you are located in a country/area using a specific tracker URL, you should also update the configuration of `tracker.produrl`. Currently, the following locations are supported by IRUS:
+
+- United Kingdom (default): http://irus.jisc.ac.uk/counter/
+- Australia and New-Zealand: https://irus.jisc.ac.uk/counter/anz/
+- United States: https://irus.jisc.ac.uk/counter/us/
 
 ## 5. Rebuild and redeploy
 
