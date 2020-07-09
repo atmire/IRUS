@@ -29,24 +29,6 @@
  */
 package com.atmire.statistics.export;
 
-import com.atmire.statistics.export.factory.OpenURLTrackerLoggerServiceFactory;
-import com.atmire.statistics.export.service.OpenURLTrackerLoggerService;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.dspace.app.util.Util;
-import org.dspace.content.*;
-import org.dspace.content.factory.ContentServiceFactory;
-import org.dspace.content.service.MetadataFieldService;
-import org.dspace.core.Context;
-import org.dspace.core.LogManager;
-import org.dspace.services.ConfigurationService;
-import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.services.model.Event;
-import org.dspace.statistics.util.SpiderDetector;
-import org.dspace.usage.AbstractUsageEventListener;
-import org.dspace.usage.UsageEvent;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,6 +42,29 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
+
+import com.atmire.statistics.export.factory.OpenURLTrackerLoggerServiceFactory;
+import com.atmire.statistics.export.service.OpenURLTrackerLoggerService;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.dspace.app.util.Util;
+import org.dspace.content.Bitstream;
+import org.dspace.content.Bundle;
+import org.dspace.content.DCDate;
+import org.dspace.content.Item;
+import org.dspace.content.MetadataField;
+import org.dspace.content.MetadataValue;
+import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.MetadataFieldService;
+import org.dspace.core.Context;
+import org.dspace.core.LogManager;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.services.model.Event;
+import org.dspace.statistics.util.SpiderDetector;
+import org.dspace.usage.AbstractUsageEventListener;
+import org.dspace.usage.UsageEvent;
 
 /**
  * User: kevin (kevin at atmire.com)
@@ -126,11 +131,13 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
     }
 
     public void receiveEvent(Event event) {
-        boolean irusEnabled = configurationService.getBooleanProperty("stats.tracker.enabled");
-        if (irusEnabled && event instanceof UsageEvent) {
+        if (event instanceof UsageEvent) {
             UsageEvent ue = (UsageEvent) event;
             Context context = ue.getContext();
-            try {
+            init(context);
+            boolean irusEnabled = configurationService.getBooleanProperty("stats.tracker.enabled");
+            if (irusEnabled) {
+                try {
                 //Check for item investigation
                 if (ue.getObject() instanceof Item) {
                     Item item = (Item) ue.getObject();
@@ -143,43 +150,46 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
                     }
                 }
                 //Check for bitstream download
-                if (ue.getObject() instanceof Bitstream) {
-                    Bitstream bit = (Bitstream) ue.getObject();
-                    //Check for an item
-                    if (0 < bit.getBundles().size()) {
-                        if (!SpiderDetector.isSpider(ue.getRequest())) {
-                            Bundle bundle = bit.getBundles().get(0);
-                            if (bundle.getName() == null || !bundle.getName().equals("ORIGINAL"))
-                                return;
+                    if (ue.getObject() instanceof Bitstream) {
+                        Bitstream bit = (Bitstream) ue.getObject();
+                        //Check for an item
+                        if (0 < bit.getBundles().size()) {
+                            if (!SpiderDetector.isSpider(ue.getRequest())) {
+                                Bundle bundle = bit.getBundles().get(0);
+                                if (bundle.getName() == null || !bundle.getName().equals("ORIGINAL"))
+                                    return;
 
-                            if (0 < bundle.getItems().size()) {
-                                Item item = bundle.getItems().get(0);
+                                if (0 < bundle.getItems().size()) {
+                                    Item item = bundle.getItems().get(0);
 
-                                if(item.isArchived() && !ContentServiceFactory.getInstance().getItemService().canEdit(context, item)) {
-                                    //Check if we have a valid type of item !
-                                    init(context);
+                                    if (item.isArchived() && !ContentServiceFactory.getInstance().getItemService()
+                                                                                   .canEdit(context, item)) {
+                                        //Check if we have a valid type of item !
                                     if (shouldProcessItem(item)) {
                                         processItem(ue.getContext(), item, bit, ue.getRequest(), BITSTREAM_DOWNLOAD);
+                                        }
                                     }
                                 }
+                            } else {
+                                log.info("Robot (" + ue.getRequest().getHeader("user-agent") + ") accessed  " + bit
+                                        .getName() + "/" + bit.getSource());
                             }
-                        } else {
-                            log.info("Robot (" + ue.getRequest().getHeader("user-agent") + ") accessed  " + bit.getName() + "/" + bit.getSource());
                         }
                     }
-                }
-            } catch (Exception e) {
-                UUID id;
-                id = ue.getObject().getID();
+                } catch (Exception e) {
+                    UUID id;
+                    id = ue.getObject().getID();
 
-                int type;
-                try {
-                    type = ue.getObject().getType();
-                } catch (Exception e1) {
-                    type = -1;
+                    int type;
+                    try {
+                        type = ue.getObject().getType();
+                    } catch (Exception e1) {
+                        type = -1;
+                    }
+                    log.error(LogManager.getHeader(ue.getContext(), "Error while processing export of use event",
+                                                   "Id: " + id + " type: " + type), e);
+                    e.printStackTrace();
                 }
-                log.error(LogManager.getHeader(ue.getContext(), "Error while processing export of use event", "Id: " + id + " type: " + type), e);
-                e.printStackTrace();
             }
         }
     }
