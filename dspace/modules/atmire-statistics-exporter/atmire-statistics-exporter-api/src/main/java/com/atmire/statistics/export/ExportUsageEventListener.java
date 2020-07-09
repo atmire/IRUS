@@ -126,7 +126,7 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
     }
 
     public void receiveEvent(Event event) {
-        boolean irusEnabled = ConfigurationManager.getBooleanProperty("stats", "tracker.enabled");
+        boolean irusEnabled = configurationService.getBooleanProperty("stats", "tracker.enabled");
         if (irusEnabled && event instanceof UsageEvent) {
             UsageEvent ue = (UsageEvent) event;
             Context context = ue.getContext();
