@@ -8,6 +8,7 @@ A new `stats.cfg` file will be created in `[dspace-src]/dspace/config/modules`.
 
 | Property | Description | Default 
 | -------- | ----------- | -------|
+|`tracker.enabled`| Configuration to allow for the patch to be disabled, while still being installed on the codebase (So no reverts need to be applied) |All|
 |`tracker.type-field`| Metadata field to check if certain items should be excluded from tracking. If empty or commented out, all items are tracked. |All|
 |`tracker.type-value`| The values in the above metadata field that will be considered to be tracked.|All|
 |`tracker.environment`| The tracker environment determines to which url the statistics are exported.| test|
