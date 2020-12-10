@@ -339,18 +339,27 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
             URL url = new URL(urlStr);
             conn = url.openConnection();
 
+            /*
+            Set live connection timeout to a low value.
+            If the responses are slow we are fine to wait until a better time.
+             */
+            conn.setConnectTimeout(1000);
+            conn.setReadTimeout(1000);
+
             // Get the response
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             while (rd.readLine() != null) ;
 
             rd.close();
             if (((HttpURLConnection) conn).getResponseCode() != 200) {
+                log.error("IRUS server responded with code " + ((HttpURLConnection) conn).getResponseCode() + " : " + urlStr);
                 ExportUsageEventListener.logfailed(c, urlStr);
             } else if (log.isDebugEnabled()) {
                 log.debug("Successfully posted " + urlStr + " on " + new Date());
             }
-        } catch (Exception e) {
-            log.error("Failed to send url to tracker URL: " + urlStr);
+        }
+        catch (Exception e) {
+            log.error("Failed to send url to tracker URL: " + urlStr + " - " + e.getMessage());
             ExportUsageEventListener.logfailed(c, urlStr);
         }
     }
@@ -361,6 +370,13 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
         try {
             URL url = new URL(tracker.getUrl());
             conn = url.openConnection();
+
+            /*
+            Set retry connection timeout to a higher value.
+             */
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             while (rd.readLine() != null) ;
             rd.close();
