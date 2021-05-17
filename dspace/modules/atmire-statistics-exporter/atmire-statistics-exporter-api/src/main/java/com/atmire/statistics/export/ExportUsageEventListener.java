@@ -331,7 +331,6 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
 
     private static void processUrl(Context c, String urlStr) throws IOException, SQLException {
         log.debug("Prepared to send url to tracker URL: " + urlStr);
-        System.out.println(urlStr);
         URLConnection conn;
 
         try {
