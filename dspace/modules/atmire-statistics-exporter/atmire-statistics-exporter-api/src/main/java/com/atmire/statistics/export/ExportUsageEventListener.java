@@ -42,11 +42,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 
 import com.atmire.statistics.export.factory.OpenURLTrackerLoggerServiceFactory;
 import com.atmire.statistics.export.service.OpenURLTrackerLoggerService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.dspace.app.util.Util;
 import org.dspace.content.Bitstream;
@@ -332,19 +337,17 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
     private static void processUrl(Context c, String urlStr) throws IOException, SQLException {
         log.debug("Prepared to send url to tracker URL: " + urlStr);
         System.out.println(urlStr);
-        URLConnection conn;
 
         try {
             // Send data
-            URL url = new URL(urlStr);
-            conn = url.openConnection();
+            HttpGet httpGet = new HttpGet(urlStr);
+            HttpClient httpClient = HttpClientBuilder.create().setConnectionTimeToLive(10, TimeUnit.SECONDS).build();
 
             // Get the response
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            while (rd.readLine() != null) ;
+            HttpResponse httpResponse = httpClient.execute(httpGet);
 
-            rd.close();
-            if (((HttpURLConnection) conn).getResponseCode() != 200) {
+
+            if (httpResponse.getStatusLine().getStatusCode() != 200) {
                 ExportUsageEventListener.logfailed(c, urlStr);
             } else if (log.isDebugEnabled()) {
                 log.debug("Successfully posted " + urlStr + " on " + new Date());
@@ -357,14 +360,12 @@ public class ExportUsageEventListener extends AbstractUsageEventListener {
 
     private static void tryReprocessFailed(Context context, OpenURLTracker tracker) throws SQLException {
         boolean success = false;
-        URLConnection conn;
         try {
-            URL url = new URL(tracker.getUrl());
-            conn = url.openConnection();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            while (rd.readLine() != null) ;
-            rd.close();
-            if (((HttpURLConnection) conn).getResponseCode() == 200) {
+            HttpGet httpGet = new HttpGet(tracker.getUrl());
+            HttpClient httpClient = HttpClientBuilder.create().setConnectionTimeToLive(10, TimeUnit.SECONDS).build();
+            HttpResponse httpResponse = httpClient.execute(httpGet);
+
+            if (httpResponse.getStatusLine().getStatusCode() == 200) {
                 success = true;
             }
         } catch (Exception e) {
