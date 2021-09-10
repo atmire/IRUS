@@ -86,5 +86,23 @@ In the installation directory of DSpace, run the following command.
 
 After the repository has been rebuilt and redeployed, Tomcat will need to be restarted to bring the changes live.
 
+## 8. Testing and verification
 
+If you are testing on a test environment, the default configuration will send the data to the IRUS test tracker (config `tracker.testurl` = https://irus.jisc.ac.uk/counter/test/).
 
+If you are testing on a production environment, your configuration should have been updated to `tracker.environment = production` and, if appropriate, the `tracker.produrl` should have been updated as well (Refer to 4. Tracker configuration).
+
+Internal testing can be executed by verifying in the DSpace logs that the statistics events are correctly sent to the tracker URL upon item view / bitstream download. In order to do so, you need to : 
+- Make sure the debug logging is enabled for the relevant java class ExportUsageEventListener in [log4j.properties](https://github.com/atmire/IRUS/blob/stable_6x/dspace/config/log4j.properties#L119)
+- Browse your repository and generate a few items views and bitstreams downloads
+- Verify the dspace logs under `[dspace]/dspace/log/dspace.log.YYYY-MM-DD` and check for the occurrences of the following logs:
+```
+DEBUG com.atmire.statistics.export.ExportUsageEventListener @ Prepared to send url to tracker URL: https://irus.jisc.ac.uk/counter/test/ [...]
+DEBUG com.atmire.statistics.export.ExportUsageEventListener @ Successfully posted https://irus.jisc.ac.uk/counter/test/ [...]
+```
+
+You should also request the [IRUS helpdesk](mailto:irus@jisc.ac.uk) to confirm that they are receiving the events on their end. 
+In that case, you need to provide the IRUS staff with the following information:
+- The URL of your repository
+- The timeframe during which the stats events were sent
+- The tracker URL
