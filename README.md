@@ -1,8 +1,7 @@
 # DSpace IRUS-UK patch
+[IRUS (Institutional Repository Usage Statistics)](http://irus.jisc.ac.uk/) enables participating institutions to share and compare information about usage of items in their institutional and research data repositories. IRUS receives raw usage data from repositories and processes these into COUNTER-conformant statistics. This provides repositories with comparable, authoritative, standards-based data. IRUS is managed and delivered by [Jisc](https://www.jisc.ac.uk/).
 
-[IRUS (Institutional Repository Usage Statistics)](http://www.irus.mimas.ac.uk/) enables UK Institutional Repositories (IRs) to share and expose statistics based on the COUNTER standard. It provides a nation-wide view of UK repository usage to benefit organisations such as [Jisc](https://www.jisc.ac.uk/), offers opportunities for benchmarking and acts as an intermediary between UK repositories and other agencies.
-
-The DSpace IRUS-UK patch has been developed and is maintained by [Atmire](https://www.atmire.com), a registered service provider for DSpace.
+The DSpace IRUS patch has been developed and is maintained by [Atmire](https://www.atmire.com/), a registered service provider for DSpace.
 
 ## Postcardware
 
