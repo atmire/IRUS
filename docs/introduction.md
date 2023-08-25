@@ -2,15 +2,12 @@
 
 ## Introduction
 
-[IRUS (Institutional Repository Usage Statistics)](http://www.irus.mimas.ac.uk/) enables UK Institutional Repositories (IRs) to share and expose statistics based on the COUNTER standard. It provides a nation-wide view of UK repository usage to benefit organisations such as [Jisc](https://www.jisc.ac.uk/), offers opportunities for benchmarking and acts as an intermediary between UK repositories and other agencies.
+[IRUS (Institutional Repository Usage Statistics)](https://irus.jisc.ac.uk/) enables participating institutions to share and compare information about usage of items in their institutional and research data repositories. IRUS receives raw usage data from repositories and processes these into COUNTER-conformant statistics. This provides repositories with comparable, authoritative, standards-based data. IRUS is managed and delivered by [Jisc](https://www.jisc.ac.uk/).
 
-IRUS-UK collects raw usage data from UK IRs and processes these data into COUNTER-compliant statistics. This provides repositories with comparable, authoritative, standards-based data.
+This patch integrates the IRUS service with DSpace. It allows for automated logging of Bitstream downloads (DSpace 4.x/5.x/6.x) and Item views (DSpace 5.x/6.x) to IRUS.  Note that the IRUS tracker is part of the Dspace 7 codebase and you can enable it in the config file.
 
-IRUS-UK is being developed by a consortium involving [Jisc](https://www.jisc.ac.uk/), [Cranfield University](https://www.cranfield.ac.uk/) and [Evidence Base](http://www.bcu.ac.uk/evidence-base).
+The DSpace IRUS patch has been developed and is maintained by [Atmire](https://www.atmire.com/), a registered service provider for DSpace.
 
-This patch integrates the IRUS-UK service with DSpace. It allows for automated logging of Bitstream downloads (DSpace 4.x/5.x/6.x)  and Item views (DSpace 5.x/6.x) to IRUS-UK.
-
-The DSpace IRUS-UK patch has been developed and is maintained by [Atmire](https://www.atmire.com), a registered service provider for DSpace.
 
 ## Postcardware
 
