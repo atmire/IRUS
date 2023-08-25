@@ -1,4 +1,4 @@
-# DSpace IRUS-UK patch
+# DSpace IRUS patch
 [IRUS (Institutional Repository Usage Statistics)](http://irus.jisc.ac.uk/) enables participating institutions to share and compare information about usage of items in their institutional and research data repositories. IRUS receives raw usage data from repositories and processes these into COUNTER-conformant statistics. This provides repositories with comparable, authoritative, standards-based data. IRUS is managed and delivered by [Jisc](https://www.jisc.ac.uk/).
 
 The DSpace IRUS patch has been developed and is maintained by [Atmire](https://www.atmire.com/), a registered service provider for DSpace.
